@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+            body {
+                zoom: 1.3;
+            }
+            #redball2020 {
+                height: 350px;
+                border-bottom: 3px solid black;
+                position: relative;
+            }
+            #square {
+                width: 133px;
+                height: 68px;
+                background: grey;
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                background: url("car.png") no-repeat -11px -33px;
+                background-size: 108%;
+            }
+            #circle{
+                width: 100px;
+                height:100px;
+                background: url("http://vospitatel.com.ua/images/k/kolobok-vector.svg") no-repeat center center;
+                background-size: 115%;
+                position: absolute;
+                bottom: 0;
+                left:120px;
+                border-radius: 70px;
+            }
+            #gameover {
+                font-size: 100px;
+                color: red;
+                text-align: center;
+                padding-top: 100px;
+                display: none;
+            }
+            #hint {
+                margin-top: 20px;
+                font-size: 16px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="redball2020">
+            <div id="square"></div>
+            <div id="circle"></div>
+            <div id="gameover">Game Over!!!</div>
+        </div>
+        <div  id="hint">Нажми пробел или дотронься до экрана телефона чтобы колобок подпрыгнул.</div>
+        <script>
+            const square = document.getElementById('square');
+            const circle = document.getElementById('circle');
+            const container = document.getElementById('redball2020');
+
+            const jump = (e) => {
+                e.preventDefault();
+                if (isJumping) return;
+                if (e.code && e.code !== 'Space') return;
+                (new Audio('12784.mp3')).play();
+                isJumping = true;
+                let down = false;
+                function move() {
+                    timer = setTimeout(() => {
+                        let bottom = parseInt(circle.style.bottom || 0);
+                        if (down) {
+                            bottom -= 1;
+                        } else {
+                            bottom += 1;
+                            if (bottom > 200) {
+                                down = true;
+                            }
+                        }
+                        circle.style.bottom = bottom + 'px';
+                        if (bottom !== 0) {
+                            move();
+                        } else {
+                            isJumping = false;
+                        }
+                    }, 5)
+                }
+                move();
+            }
+
+            const int1 = setInterval(() => {
+                let right = parseInt(square.style.right || 0);
+                if (right > container.clientWidth) {
+                    right = 0;
+                }
+                square.style.right = (right+5) + 'px';
+                const sq = square.getBoundingClientRect();
+                const ci = circle.getBoundingClientRect();
+                if ((ci.y + ci.height) > sq.y && (ci.x + ci.width - 30) > sq.x && ci.x < (sq.x + sq.width - 30)) {
+                    clearInterval(int1);
+                    clearInterval(int2);
+                    clearTimeout(timer);
+                    isJumping = true;
+                    (new Audio('crash.mp3')).play();
+                    document.getElementById('gameover').style.display = 'block';
+                }
+            }, 20);
+
+            let isJumping = false;
+            let  timer;
+
+            document.addEventListener('keydown', jump);
+            document.addEventListener('touchstart', jump);
+            const int2 = setInterval(() => {
+                (new Audio('car.mp3')).play();
+            }, 5000)
+        </script>
+    </body>
+</html>
