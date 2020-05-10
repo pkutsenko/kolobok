@@ -27,21 +27,57 @@
         .man.right {
             background-position: -464px -136px;
         }
+        #vupa {
+            width: 150px;
+            height: 150px;
+            background: url("gusenica.gif") no-repeat 50% 50%;
+            background-size: cover;
+            position: absolute;
+            left: 300px;
+            top: 200px;
+        }
+        #home {
+            width: 200px;
+            height: 200px;
+            background: url('home.png') no-repeat 50% 50%;
+            background-size: cover;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+
     </style>
 </head>
 <body>
     <div class="man" id="man" style="left: 0;top: 0;"></div>
+    <div id="vupa"></div>
+    <div id="home"></div>
     <script>
         const man = document.getElementById('man');
         let down = false;
         let played = false;
+        let gameOver = false;
+        let audio;
+
+        const cw = document.body.clientWidth;
+        const ch = document.body.clientHeight;
+        const vupa = document.getElementById('vupa');
+        const int2 = setInterval(() => {
+            const left = Math.round(Math.random()*(cw-150));
+            const top = Math.round(Math.random()*(ch-150));
+            vupa.style.left=left + 'px';
+            vupa.style.top=top + 'px';
+        },2000);
+
         document.addEventListener('keydown', () => {
             if (played) return;
-            (new Audio('super-mario-saundtrek.mp3')).play();
+            audio =(new Audio('super-mario-saundtrek.mp3'));
+            audio.play();
             played = true;
         });
         document.addEventListener('keydown', (e) => {
             console.log(e)
+            if (gameOver) return;
             if (down) return;
             down = true;
             switch (e.code) {
@@ -87,9 +123,32 @@
                 }
                 man.style.left = left + 'px';
                 man.style.top = top + 'px';
+
+                const cx = document.body.clientWidth;
+                const cy = document.body.clientHeight;
+                const vp = vupa.getBoundingClientRect();
+                const x = left + 64;
+                const y = top + 64;
+                if (Math.abs(vp.left + 75 - x) < 100 && Math.abs(vp.top + 75 - y) < 100) {
+                    clearInterval(int);
+                    clearInterval(int2);
+                    gameOver = true;
+                    man.className = 'man';
+                    audio.pause();
+                    (new Audio('gameover.mp3')).play();
+                }
+                if (left>(cx-150)&&top>(cy-150)){
+                    clearInterval(int);
+                    clearInterval(int2);
+                    gameOver = true;
+                    man.className = 'man';
+                    audio.pause();
+                    (new Audio('vin.mp3')).play();
+                }
             }, 10);
 
             document.addEventListener('keyup', () => {
+                if (gameOver) return;
                 clearInterval(int);
                 man.className = 'man';
                 down = false;
