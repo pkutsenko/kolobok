@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        input {
+            height: 30px;
+            line-height: 30px;
+            font-size: 20px;
+            padding: 0 15px;
+            width: 225px;
+            margin: 20px 0 20px 0;
+        }
+        .item {
+            display: block;
+        }
+        img {
+            display: block;
+        }
+        #logo {
+            position: absolute;
+            top: 12px;
+            left: 320px;
+            font-size: 46px;
+        }
+        #s1 {
+            color: red;
+        }
+        #s2,#s3,#s4,#s5 {
+            color: yellow;
+        }
+        #s6 {
+            color: green;
+        }
+        #s7 {
+            color: blue;
+        }
+        #s8 {
+            color: purple;
+        }
+    </style>
+</head>
+<body>
+<input type="text" id="search">
+
+<div id="logo">
+    <span id="s1">ᗷ</span>
+    <span id="s2">ᓍ</span>
+    <span id="s3">ᓍ</span>
+    <span id="s4">ᓍ</span>
+    <span id="s5">ᓍ</span>
+    <span id="s6">ᗷ</span>
+    <span id="s7">ᒪ</span>
+    <span id="s8">ᘿ</span>
+</div>
+<div id="list"></div>
+
+<script>
+    const search = document.getElementById('search');
+    search.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        const val = search.value;
+        fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${val}&type=video&key=AIzaSyA9eduBazjtSotlAiEmID_zASm-LTiIji0`)
+            .then((res) => res.json())
+            .then((res) => {
+                let items = '';
+                res.items.forEach(item => {
+                    items += `
+                    <a href="https://www.youtube.com/watch?v=${item.id.videoId}" class="item" target="_blank">
+    <img src="${item.snippet.thumbnails.default.url}" width="120" height="90">
+    <h4>${item.snippet.title}</h4>
+    <h5>${item.snippet.description}</h5>
+</a>
+                    `
+                });
+                document.getElementById('list').innerHTML = items;
+            });
+    });
+</script>
+</body>
+</html>
